@@ -4,8 +4,6 @@ CREATE DATABASE datalumini;
 
 USE datalumini;
 
-
-
 CREATE TABLE empresa (
 idempresa INT PRIMARY KEY AUTO_INCREMENT,
 razaosocial VARCHAR(255),
@@ -27,6 +25,8 @@ CREATE TABLE estufa (
 idestufa INT PRIMARY KEY AUTO_INCREMENT,
 nome_estufa VARCHAR(255),
 status_estufa TINYINT,
+limiteMaximo FLOAT,
+limiteMinimo FLOAT,
 fkempresa INT,
 CONSTRAINT chfkempresaestufa
 FOREIGN KEY (fkempresa) REFERENCES empresa (idempresa)
@@ -36,8 +36,8 @@ CREATE TABLE sensor(
 idsensor INT PRIMARY KEY AUTO_INCREMENT,
 nome_sensor VARCHAR(255),
 status_sensor TINYINT,
-dt_instalação DATETIME,
-dt_atualização DATETIME,
+dt_instalacao DATETIME,
+dt_atualizacao DATETIME,
 fkestufa INT,
 CONSTRAINT chfkestufasensor 
 FOREIGN KEY (fkestufa) REFERENCES estufa (idestufa));
@@ -50,11 +50,29 @@ fksensor INT,
 CONSTRAINT chsensorleitura
 FOREIGN KEY (fksensor) REFERENCES sensor(idsensor));
 
+CREATE TABLE log(
+idLog INT PRIMARY KEY AUTO_INCREMENT,
+dataHora DATETIME,
+fkEstufa INT ,
+fkUsuario INT,
+CONSTRAINT ctFkEstufa 
+FOREIGN KEY (fkEstufa)
+REFERENCES estufa(idestufa),
+CONSTRAINT ctFkUsuario
+FOREIGN KEY (fkUsuario)
+REFERENCES usuario(idusuario)
+);
+
+INSERT INTO log(dataHora, fkEstufa,fkUsuario) VALUES 
+('2026-04-22 10:00:00', 1, 1 ),
+('2026-04-21 15:23:00', 3, 4),
+('2026-04-22 11:15:16', 2, 3);
+
 INSERT INTO empresa (razaosocial, cnpj, email, responsavel_legal, status_empresa) VALUES
-('Laboratório de Biologia Vegetal USP', '11111111000101', 'contato@lbvusp.br', 'Dra. Ana Ribeiro', 1),
-('Centro de Pesquisa Genética Unicamp', '22222222000102', 'suporte@geneticacamp.br', 'Dr. Lucas Martins', 1),
-('Embrapa Recursos Genéticos e Biotecnologia', '11111111000101', 'contato@embrapa.br', 'Dr. João Silva', 1),
-('Instituto Agronômico de Campinas (IAC)', '55555555000105', 'contato@iac.sp.gov.br', 'Dr. Rafael Costa', 1);
+('Laboratório de Biologia Vegetal USP', '11111111000', 'contato@lbvusp.br', 'Dra. Ana Ribeiro', 1),
+('Centro de Pesquisa Genética Unicamp', '22222222000', 'suporte@geneticacamp.br', 'Dr. Lucas Martins', 1),
+('Embrapa Recursos Genéticos e Biotecnologia', '11111111000', 'contato@embrapa.br', 'Dr. João Silva', 1),
+('Instituto Agronômico de Campinas (IAC)', '55555555000', 'contato@iac.sp.gov.br', 'Dr. Rafael Costa', 1);
 
 INSERT INTO usuario (email, senha, cpf, fkempresa) VALUES
 ('joao.silva@embrapa.br', 'embrapa123', '12345678901', 3),
@@ -69,7 +87,8 @@ INSERT INTO estufa (nome_estufa, status_estufa, fkempresa) VALUES
 ('estufa UNICAMP', 1, 2),
 ('estufa IAC', 1, 4);
 
-INSERT INTO sensor (nome_sensor, status_sensor, dt_instalação, dt_atualização, fkestufa) VALUES
+
+INSERT INTO sensor (nome_sensor, status_sensor, dt_instalacao, dt_atualizacao, fkestufa) VALUES
 ('Sensor A - EMBRAPA', 1, '2026-03-01 08:00:00', '2026-04-01 09:00:00', 1),
 ('Sensor B - USP', 1, '2026-03-02 09:00:00', '2026-04-01 09:20:00', 2),
 ('Sensor C - UNICAMP', 1, '2026-03-03 10:00:00', '2026-04-01 09:40:00', 3),
