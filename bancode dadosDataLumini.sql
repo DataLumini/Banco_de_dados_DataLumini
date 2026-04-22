@@ -81,11 +81,11 @@ INSERT INTO usuario (email, senha, cpf, fkempresa) VALUES
 ('lucas.martins@unicamp.br', 'unicamp123', '56789012345', 2),
 ('maria.santos@iac.sp.gov.br', 'iac123', '89012345678', 4);
 
-INSERT INTO estufa (nome_estufa, status_estufa, fkempresa) VALUES
-('estufa EMBRAPA', 1, 3),
-('estufa USP', 1, 1),
-('estufa UNICAMP', 1, 2),
-('estufa IAC', 1, 4);
+INSERT INTO estufa (nome_estufa, limiteMinimo,limiteMaximo, status_estufa,fkempresa) VALUES
+('estufa EMBRAPA',100,200, 1, 3),
+('estufa USP', 100,200, 1, 1),
+('estufa UNICAMP', 100,200,1, 2),
+('estufa IAC',100,200, 1, 4);
 
 
 INSERT INTO sensor (nome_sensor, status_sensor, dt_instalacao, dt_atualizacao, fkestufa) VALUES
@@ -105,4 +105,35 @@ INSERT INTO leitura (freq_luminosidade, dt_capt_dados, fksensor) VALUES
 (400.0, '2026-04-01 09:00:00', 4),
 (420.8, '2026-04-01 10:00:00', 4);
 
+SELECT 
+    l.idleitura,
+    l.freq_luminosidade,
+    l.dt_capt_dados,
+    s.nome_sensor,
+    es.nome_estufa,
+    e.razaosocial
+FROM leitura l
+JOIN sensor s 
+    ON l.fksensor = s.idsensor
+JOIN estufa es 
+    ON s.fkestufa = es.idestufa
+JOIN empresa e 
+    ON es.fkempresa = e.idempresa;
+    
+    
+    
+    SELECT e.limiteminimo,
+    e.limitemaximo,
+    l.dt_capt_dados,
+    l.freq_luminosidade,
+    e.nome_estufa 
+    FROM estufa e 
+    JOIN sensor s 
+    ON s.fkestufa = e.idestufa
+    JOIN leitura l
+    ON l.fksensor = s.idsensor;
+    
+    
+    
+    
 
