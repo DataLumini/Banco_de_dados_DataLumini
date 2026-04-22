@@ -63,11 +63,6 @@ FOREIGN KEY (fkUsuario)
 REFERENCES usuario(idusuario)
 );
 
-INSERT INTO log(dataHora, fkEstufa,fkUsuario) VALUES 
-('2026-04-22 10:00:00', 1, 1 ),
-('2026-04-21 15:23:00', 3, 4),
-('2026-04-22 11:15:16', 2, 3);
-
 INSERT INTO empresa (razaosocial, cnpj, email, responsavel_legal, status_empresa) VALUES
 ('Laboratório de Biologia Vegetal USP', '11111111000', 'contato@lbvusp.br', 'Dra. Ana Ribeiro', 1),
 ('Centro de Pesquisa Genética Unicamp', '22222222000', 'suporte@geneticacamp.br', 'Dr. Lucas Martins', 1),
@@ -105,6 +100,11 @@ INSERT INTO leitura (freq_luminosidade, dt_capt_dados, fksensor) VALUES
 (400.0, '2026-04-01 09:00:00', 4),
 (420.8, '2026-04-01 10:00:00', 4);
 
+INSERT INTO log(dataHora, fkEstufa,fkUsuario) VALUES 
+('2026-04-22 10:00:00', 1, 1 ),
+('2026-04-21 15:23:00', 3, 4),
+('2026-04-22 11:15:16', 2, 3);
+
 SELECT 
     l.idleitura,
     l.freq_luminosidade,
@@ -132,8 +132,5 @@ JOIN empresa e
     ON s.fkestufa = e.idestufa
     JOIN leitura l
     ON l.fksensor = s.idsensor;
-    
-    
-    
-    
 
+    
