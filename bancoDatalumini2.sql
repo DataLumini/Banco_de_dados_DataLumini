@@ -28,8 +28,11 @@ status_estufa TINYINT,
 limiteMaximo FLOAT,
 limiteMinimo FLOAT,
 fkempresa INT,
+fk_responsavel INT,
 CONSTRAINT chfkempresaestufa
-FOREIGN KEY (fkempresa) REFERENCES empresa (idempresa)
+FOREIGN KEY (fkempresa) REFERENCES empresa (idempresa),
+CONSTRAINT chfkresponsavelestufa 
+FOREIGN KEY (fk_responsavel) REFERENCES usuario (idusuario)
 );
 
 CREATE TABLE sensor(
@@ -50,19 +53,6 @@ fksensor INT,
 CONSTRAINT chsensorleitura
 FOREIGN KEY (fksensor) REFERENCES sensor(idsensor));
 
-CREATE TABLE log(
-idLog INT PRIMARY KEY AUTO_INCREMENT,
-dataHora DATETIME DEFAULT NOW(),
-fkEstufa INT ,
-fkUsuario INT,
-CONSTRAINT ctFkEstufa 
-FOREIGN KEY (fkEstufa)
-REFERENCES estufa(idestufa),
-CONSTRAINT ctFkUsuario
-FOREIGN KEY (fkUsuario)
-REFERENCES usuario(idusuario)
-);
-
 INSERT INTO empresa (razaosocial, cnpj, email, responsavel_legal, status_empresa) VALUES
 ('Laboratório de Biologia Vegetal USP', '11111111000', 'contato@lbvusp.br', 'Dra. Ana Ribeiro', 1),
 ('Centro de Pesquisa Genética Unicamp', '22222222000', 'suporte@geneticacamp.br', 'Dr. Lucas Martins', 1),
@@ -76,11 +66,11 @@ INSERT INTO usuario (email, senha, cpf, fkempresa) VALUES
 ('lucas.martins@unicamp.br', 'unicamp123', '56789012345', 2),
 ('maria.santos@iac.sp.gov.br', 'iac123', '89012345678', 4);
 
-INSERT INTO estufa (nome_estufa, limiteMinimo,limiteMaximo, status_estufa,fkempresa) VALUES
-('estufa EMBRAPA',100,200, 1, 3),
-('estufa USP', 100,200, 1, 1),
-('estufa UNICAMP', 100,200,1, 2),
-('estufa IAC',100,200, 1, 4);
+INSERT INTO estufa (nome_estufa, limiteMinimo,limiteMaximo, status_estufa,fkempresa, fk_responsavel) VALUES
+('estufa EMBRAPA',100,200, 1, 3, 1),
+('estufa USP', 100,200, 1, 1,2),
+('estufa UNICAMP', 100,200,1, 2,4),
+('estufa IAC',100,200, 1, 4,5);
 
 
 INSERT INTO sensor (nome_sensor, status_sensor, dt_instalacao, dt_atualizacao, fkestufa) VALUES
@@ -99,11 +89,6 @@ INSERT INTO leitura (freq_luminosidade, dt_capt_dados, fksensor) VALUES
 (175.0, '2026-04-01 10:00:00', 3),
 (400.0, '2026-04-01 09:00:00', 4),
 (420.8, '2026-04-01 10:00:00', 4);
-
-INSERT INTO log(dataHora, fkEstufa,fkUsuario) VALUES 
-('2026-04-22 10:00:00', 1, 1 ),
-('2026-04-21 15:23:00', 3, 4),
-('2026-04-22 11:15:16', 2, 3);
 
 SELECT 
     l.idleitura,
@@ -132,5 +117,3 @@ JOIN empresa e
     ON s.fkestufa = e.idestufa
     JOIN leitura l
     ON l.fksensor = s.idsensor;
-
-    
