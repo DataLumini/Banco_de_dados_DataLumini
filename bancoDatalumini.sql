@@ -9,7 +9,6 @@ idempresa INT PRIMARY KEY AUTO_INCREMENT,
 razaosocial VARCHAR(255),
 cnpj CHAR(11),
 email VARCHAR(255),
-responsavel_legal VARCHAR(255),
 status_empresa TINYINT);
 
 CREATE TABLE usuario(
@@ -17,9 +16,15 @@ idusuario INT PRIMARY KEY AUTO_INCREMENT,
 email VARCHAR(255),
 senha VARCHAR(255),
 cpf CHAR(11),
-fkempresa INT, 
+fkEmpresa INT, 
 CONSTRAINT chfkempresausuario
-FOREIGN KEY (fkempresa) REFERENCES empresa (idempresa));
+FOREIGN KEY (fkEmpresa) REFERENCES empresa (idempresa));
+
+CREATE TABLE usuario_estufa (
+fkUsuario INT,
+fkEstufa INT,
+CONSTRAINT fkusuario_estufa
+FOREIGN KEY (fkUsuario) REFERENCES usuario (idusuario));
 
 CREATE TABLE estufa (
 idestufa INT PRIMARY KEY AUTO_INCREMENT,
@@ -27,31 +32,53 @@ nome_estufa VARCHAR(255),
 status_estufa TINYINT,
 limiteMaximo FLOAT,
 limiteMinimo FLOAT,
-fkempresa INT,
-fk_responsavel INT,
+fkEmpresa INT,
 CONSTRAINT chfkempresaestufa
-FOREIGN KEY (fkempresa) REFERENCES empresa (idempresa),
-CONSTRAINT chfkresponsavelestufa 
-FOREIGN KEY (fk_responsavel) REFERENCES usuario (idusuario)
+FOREIGN KEY (fkEmpresa) REFERENCES empresa (idempresa)
 );
 
+CREATE TABLE setor (
+idsetor INT PRIMARY KEY AUTO_INCREMENT,
+nome VARCHAR(45),
+fkEstufa INT,
+CONSTRAINT fksetor_estufa
+FOREIGN KEY (fkEstufa) REFERENCES estufa(idestufa)
+);
+
+ CREATE TABLE estante (
+ idestante INT PRIMARY KEY AUTO_INCREMENT,
+ numeroIdentificador INT,
+ fkSetor INT,
+ CONSTRAINT fksetor_estante 
+ FOREIGN KEY (fkSetor) REFERENCES setor (idsetor)
+ );
+ 
+ CREATE TABLE prateleira (
+ idprateleira INT PRIMARY KEY AUTO_INCREMENT,
+  numeroIdentificador INT,
+  fkEstante INT,
+  CONSTRAINT fkestante_prateleira
+  FOREIGN KEY (fkEstante) REFERENCES estante (idestante)
+ );
+ 
 CREATE TABLE sensor(
 idsensor INT PRIMARY KEY AUTO_INCREMENT,
 nome_sensor VARCHAR(255),
 status_sensor TINYINT,
 dt_instalacao DATETIME,
 dt_atualizacao DATETIME,
-fkestufa INT,
+fkPrateleira INT UNIQUE,
 CONSTRAINT chfkestufasensor 
-FOREIGN KEY (fkestufa) REFERENCES estufa (idestufa));
+FOREIGN KEY (fkPrateleira) REFERENCES Prateleira (idprateleira));
 
 CREATE TABLE leitura(
-idleitura INT PRIMARY KEY AUTO_INCREMENT,
+idleitura INT AUTO_INCREMENT,
 freq_luminosidade FLOAT,
 dt_capt_dados DATETIME DEFAULT NOW(),
-fksensor INT,
-CONSTRAINT chsensorleitura
-FOREIGN KEY (fksensor) REFERENCES sensor(idsensor));
+fkSensor INT,
+PRIMARY KEY(idleitura, fkSensor),
+CONSTRAINT fksensor_leitura
+FOREIGN KEY (fkSensor) REFERENCES sensor(idsensor));
 
 INSERT INTO empresa (razaosocial, cnpj, email, responsavel_legal, status_empresa) VALUES
 ('Laboratório de Biologia Vegetal USP', '11111111000', 'contato@lbvusp.br', 'Dra. Ana Ribeiro', 1),
@@ -59,27 +86,27 @@ INSERT INTO empresa (razaosocial, cnpj, email, responsavel_legal, status_empresa
 ('Embrapa Recursos Genéticos e Biotecnologia', '11111111000', 'contato@embrapa.br', 'Dr. João Silva', 1),
 ('Instituto Agronômico de Campinas (IAC)', '55555555000', 'contato@iac.sp.gov.br', 'Dr. Rafael Costa', 1);
 
-INSERT INTO usuario (email, senha, cpf, fkempresa) VALUES
+INSERT INTO usuario (email, senha, cpf, fkEmpresa) VALUES
 ('joao.silva@embrapa.br', 'embrapa123', '12345678901', 3),
 ('ana.ribeiro@usp.br', 'usp123', '34567890123', 1),
 ('carlos.lima@usp.br', 'usp456', '45678901234', 1),
 ('lucas.martins@unicamp.br', 'unicamp123', '56789012345', 2),
 ('maria.santos@iac.sp.gov.br', 'iac123', '89012345678', 4);
 
-INSERT INTO estufa (nome_estufa, limiteMinimo,limiteMaximo, status_estufa,fkempresa, fk_responsavel) VALUES
+INSERT INTO estufa (nome_estufa, limiteMinimo,limiteMaximo, status_estufa,fkEmpresa, fk_responsavel) VALUES
 ('estufa EMBRAPA',100,200, 1, 3, 1),
 ('estufa USP', 100,200, 1, 1,2),
 ('estufa UNICAMP', 100,200,1, 2,4),
 ('estufa IAC',100,200, 1, 4,5);
 
 
-INSERT INTO sensor (nome_sensor, status_sensor, dt_instalacao, dt_atualizacao, fkestufa) VALUES
+INSERT INTO sensor (nome_sensor, status_sensor, dt_instalacao, dt_atualizacao, fkEstufa) VALUES
 ('Sensor A - EMBRAPA', 1, '2026-03-01 08:00:00', '2026-04-01 09:00:00', 1),
 ('Sensor B - USP', 1, '2026-03-02 09:00:00', '2026-04-01 09:20:00', 2),
 ('Sensor C - UNICAMP', 1, '2026-03-03 10:00:00', '2026-04-01 09:40:00', 3),
 ('sensor D - IAC', 1, '2026-03-05 12:00:00', '2026-04-01 10:10:00', 4);
 
-INSERT INTO leitura (freq_luminosidade, dt_capt_dados, fksensor) VALUES
+INSERT INTO leitura (freq_luminosidade, dt_capt_dados, fkSensor) VALUES
 (110.5, '2026-04-01 09:00:00', 1),
 (120.0, '2026-04-01 10:00:00', 1),
 (130.2, '2026-04-01 11:00:00', 1),
