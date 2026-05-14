@@ -8,8 +8,6 @@ CREATE TABLE empresa (
 idEmpresa INT PRIMARY KEY AUTO_INCREMENT,
 razaosocial VARCHAR(255),
 cnpj CHAR(11),
-email VARCHAR(255),
-responsavelLegal VARCHAR (45),
 statusEmpresa TINYINT);
 
 CREATE TABLE usuario(
