@@ -80,11 +80,11 @@ PRIMARY KEY(idleitura, fkSensor),
 CONSTRAINT fksensorleitura
 FOREIGN KEY (fkSensor) REFERENCES sensor(idSensor));
 
-INSERT INTO empresa (razaosocial, cnpj, email, responsavelLegal, statusEmpresa) VALUES
-('Laboratório de Biologia Vegetal USP', '11111111000', 'contato@lbvusp.br', 'Dra. Ana Ribeiro', 1),
-('Centro de Pesquisa Genética Unicamp', '22222222000', 'suporte@geneticacamp.br', 'Dr. Lucas Martins', 1),
-('Embrapa Recursos Genéticos e Biotecnologia', '11111111000', 'contato@embrapa.br', 'Dr. João Silva', 1),
-('Instituto Agronômico de Campinas (IAC)', '55555555000', 'contato@iac.sp.gov.br', 'Dr. Rafael Costa', 1);
+INSERT INTO empresa (razaosocial, cnpj, statusEmpresa) VALUES
+('Laboratório de Biologia Vegetal USP', '11111111000', 1),
+('Centro de Pesquisa Genética Unicamp', '22222222000', 1),
+('Embrapa Recursos Genéticos e Biotecnologia', '11111111000',1),
+('Instituto Agronômico de Campinas (IAC)', '55555555000', 1);
 
 INSERT INTO usuario (email, senha, cpf, fkEmpresa) VALUES
 ('joao.silva@embrapa.br', 'embrapa123', '12345678901', 3),
@@ -285,30 +285,44 @@ INSERT INTO leitura (freqLuminosidade, dtCaptDados, fkSensor) VALUES
 (175.0, '2026-04-01 10:00:00', 3),
 (400.0, '2026-04-01 09:00:00', 4),
 (420.8, '2026-04-01 10:00:00', 4);
+
+
 SELECT 
-    l.idleitura,
+    l.idLeitura,
     l.freqLuminosidade,
     l.dtCaptDados,
     s.nomeSensor,
     es.nomeEstufa,
-    e.razaosocial
+    emp.razaosocial
 FROM leitura l
 JOIN sensor s 
     ON l.fkSensor = s.idSensor
+JOIN prateleira p 
+    ON s.fkPrateleira = p.idPrateleira
+JOIN estante est 
+    ON p.fkEstante = est.idEstante
+JOIN setor setr 
+    ON est.fkSetor = setr.idSetor
 JOIN estufa es 
-    ON s.fkEstufa = es.idEstufa
-JOIN empresa e 
-    ON es.fkEmpresa = e.idEmpresa;
+    ON setr.fkEstufa = es.idEstufa
+JOIN empresa emp 
+    ON es.fkEmpresa = emp.idEmpresa;
     
     
-    
-    SELECT e.limiteminimo,
-    e.limitemaximo,
+SELECT 
+    es.limiteMinimo,
+    es.limiteMaximo,
     l.dtCaptDados,
     l.freqLuminosidade,
-    e.nomeEstufa 
-    FROM estufa e 
-    JOIN sensor s 
-    ON s.fkEstufa = e.idEstufa
-    JOIN leitura l
+    es.nomeEstufa 
+FROM estufa es 
+JOIN setor setr 
+    ON setr.fkEstufa = es.idEstufa
+JOIN estante est 
+    ON est.fkSetor = setr.idSetor
+JOIN prateleira p 
+    ON p.fkEstante = est.idEstante
+JOIN sensor s 
+    ON s.fkPrateleira = p.idPrateleira
+JOIN leitura l
     ON l.fkSensor = s.idSensor;
