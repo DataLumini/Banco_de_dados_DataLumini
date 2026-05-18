@@ -12,7 +12,8 @@ statusEmpresa TINYINT);
 
 CREATE TABLE usuario(
 idusuario INT PRIMARY KEY AUTO_INCREMENT,
-email VARCHAR(255),
+nome VARCHAR(45),
+email VARCHAR(255) UNIQUE,
 senha VARCHAR(255),
 cpf CHAR(11),
 fkEmpresa INT, 
@@ -86,12 +87,12 @@ INSERT INTO empresa (razaosocial, cnpj, statusEmpresa) VALUES
 ('Embrapa Recursos Genéticos e Biotecnologia', '11111111000',1),
 ('Instituto Agronômico de Campinas (IAC)', '55555555000', 1);
 
-INSERT INTO usuario (email, senha, cpf, fkEmpresa) VALUES
-('joao.silva@embrapa.br', 'embrapa123', '12345678901', 3),
-('ana.ribeiro@usp.br', 'usp123', '34567890123', 1),
-('carlos.lima@usp.br', 'usp456', '45678901234', 1),
-('lucas.martins@unicamp.br', 'unicamp123', '56789012345', 2),
-('maria.santos@iac.sp.gov.br', 'iac123', '89012345678', 4);
+INSERT INTO usuario (NOME,email, senha, cpf, fkEmpresa) VALUES
+('joão','joao.silva@embrapa.br', 'embrapa123', '12345678901', 3),
+('ana','ana.ribeiro@usp.br', 'usp123', '34567890123', 1),
+('carlos','carlos.lima@usp.br', 'usp456', '45678901234', 1),
+('lucas','lucas.martins@unicamp.br', 'unicamp123', '56789012345', 2),
+('maria','maria.santos@iac.sp.gov.br', 'iac123', '89012345678', 4);
 
 INSERT INTO estufa (nomeEstufa, limiteMinimo,limiteMaximo, statusEstufa,fkEmpresa) VALUES
 ('estufa EMBRAPA',100,200, 1, 3),
