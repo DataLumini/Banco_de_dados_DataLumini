@@ -77,55 +77,105 @@ CREATE TABLE Leitura (
     CONSTRAINT chfk_sensor_leitura FOREIGN KEY (fkSensor) REFERENCES Sensor(idSensor)
 );
 
+-- 1. Empresas (2 Empresas)
 INSERT INTO Empresa (razaoSocial, cnpj, status) VALUES
 ('Laboratório de Biologia Vegetal USP', '11.111.111/0001-00', 1),
-('Centro de Pesquisa Genética Unicamp', '22.222.222/0001-00', 1),
-('Embrapa Rec Genéticos e Biotecnologia', '33.333.333/0001-00', 1),
-('Instituto Agronômico de Campinas (IAC)', '44.444.444/0001-00', 1);
+('Centro de Pesquisa Genética Unicamp', '22.222.222/0001-00', 1);
 
+-- 2. Usuários (3 Usuários: 2 na USP, 1 na Unicamp)
 INSERT INTO Usuario (nome, email, senha, cpf, status, fkEmpresa) VALUES
-('João Silva', 'joao.silva@embrapa.br', 'embrapa123', '12345678901', 1, 3),
 ('Ana Ribeiro', 'ana.ribeiro@usp.br', 'usp123', '34567890123', 1, 1),
 ('Carlos Lima', 'carlos.lima@usp.br', 'usp456', '45678901234', 1, 1),
-('Lucas Martins', 'lucas.martins@unicamp.br', 'unicamp123', '56789012345', 1, 2),
-('Maria Santos', 'maria.santos@iac.sp.gov.br', 'iac123', '89012345678', 1, 4);
+('Lucas Martins', 'lucas.martins@unicamp.br', 'unicamp123', '56789012345', 1, 2);
 
+-- 3. Estufas (2 por empresa = 4 Estufas)
 INSERT INTO Estufa (nome, limiteMinimo, limiteMaximo, status, fkEmpresa) VALUES
-('Estufa EMBRAPA Principal', 100, 200, 1, 3),
-('Estufa USP Bloco B', 100, 200, 1, 1),
-('Estufa UNICAMP Central', 100, 200, 1, 2),
-('Estufa IAC Estufa 1', 100, 200, 1, 4);
+('Estufa USP A', 100, 200, 1, 1), -- id 1
+('Estufa USP B', 100, 200, 1, 1), -- id 2
+('Estufa UNICAMP A', 100, 200, 1, 2), -- id 3
+('Estufa UNICAMP B', 100, 200, 1, 2); -- id 4
 
+-- 4. Associação Usuário x Estufa
 INSERT INTO Usuario_Estufa (fkUsuario, fkEstufa) VALUES
-(1, 1), (2, 2), (3, 2), (4, 3), (5, 4);
+(1, 1), (1, 2), -- Ana tem acesso às duas estufas da USP
+(2, 1),         -- Carlos tem acesso só à estufa A da USP
+(3, 3), (3, 4); -- Lucas tem acesso às duas estufas da Unicamp
 
+-- 5. Setores (2 por Estufa = 8 Setores)
 INSERT INTO Setor (nome, fkEstufa) VALUES
-('Setor Norte', 1), ('Setor Sul', 2), ('Setor Leste', 3), ('Setor Oeste', 4);
+('Setor Norte', 1), ('Setor Sul', 1),   -- Estufa 1
+('Setor Leste', 2), ('Setor Oeste', 2), -- Estufa 2
+('Setor Norte', 3), ('Setor Sul', 3),   -- Estufa 3
+('Setor Leste', 4), ('Setor Oeste', 4); -- Estufa 4
 
+-- 6. Estantes (2 por Setor = 16 Estantes)
 INSERT INTO Estante (numeroIdentificador, fkSetor) VALUES
-(101, 1), (201, 2), (301, 3), (401, 4);
+(1, 1), (2, 1), (3, 2), (4, 2), -- Setores 1 e 2 (Estufa 1)
+(5, 3), (6, 3), (7, 4), (8, 4), -- Setores 3 e 4 (Estufa 2)
+(9, 5), (10, 5), (11, 6), (12, 6), -- Setores 5 e 6 (Estufa 3)
+(13, 7), (14, 7), (15, 8), (16, 8); -- Setores 7 e 8 (Estufa 4)
 
+-- 7. Prateleiras (4 por Estante = 64 Prateleiras)
 INSERT INTO Prateleira (numeroIdentificador, fkEstante) VALUES
-(1, 1), (1, 2), (1, 3), (1, 4);
+(1,1), (2,1), (3,1), (4,1), (1,2), (2,2), (3,2), (4,2),
+(1,3), (2,3), (3,3), (4,3), (1,4), (2,4), (3,4), (4,4),
+(1,5), (2,5), (3,5), (4,5), (1,6), (2,6), (3,6), (4,6),
+(1,7), (2,7), (3,7), (4,7), (1,8), (2,8), (3,8), (4,8),
+(1,9), (2,9), (3,9), (4,9), (1,10), (2,10), (3,10), (4,10),
+(1,11), (2,11), (3,11), (4,11), (1,12), (2,12), (3,12), (4,12),
+(1,13), (2,13), (3,13), (4,13), (1,14), (2,14), (3,14), (4,14),
+(1,15), (2,15), (3,15), (4,15), (1,16), (2,16), (3,16), (4,16);
 
-INSERT INTO Sensor (nome, status, dt_instalacao, dt_atualizacao, fkPrateleira) VALUES
-('Sensor A - EMBRAPA', 1, '2026-03-01 08:00:00', '2026-04-01 09:00:00', 1),
-('Sensor B - USP', 1, '2026-03-02 09:00:00', '2026-04-01 09:20:00', 2),
-('Sensor C - UNICAMP', 1, '2026-03-03 10:00:00', '2026-04-01 09:40:00', 3),
-('Sensor D - IAC', 1, '2026-03-05 12:00:00', '2026-04-01 10:10:00', 4);
+-- 8. Sensores (1 por Prateleira = 64 Sensores)
+INSERT INTO Sensor (nome, status, fkPrateleira) VALUES
+('S-01', 1, 1), ('S-02', 1, 2), ('S-03', 1, 3), ('S-04', 1, 4),
+('S-05', 1, 5), ('S-06', 1, 6), ('S-07', 1, 7), ('S-08', 1, 8),
+('S-09', 1, 9), ('S-10', 1, 10), ('S-11', 1, 11), ('S-12', 1, 12),
+('S-13', 1, 13), ('S-14', 1, 14), ('S-15', 1, 15), ('S-16', 1, 16),
+('S-17', 1, 17), ('S-18', 1, 18), ('S-19', 1, 19), ('S-20', 1, 20),
+('S-21', 1, 21), ('S-22', 1, 22), ('S-23', 1, 23), ('S-24', 1, 24),
+('S-25', 1, 25), ('S-26', 1, 26), ('S-27', 1, 27), ('S-28', 1, 28),
+('S-29', 1, 29), ('S-30', 1, 30), ('S-31', 1, 31), ('S-32', 1, 32),
+('S-33', 1, 33), ('S-34', 1, 34), ('S-35', 1, 35), ('S-36', 1, 36),
+('S-37', 1, 37), ('S-38', 1, 38), ('S-39', 1, 39), ('S-40', 1, 40),
+('S-41', 1, 41), ('S-42', 1, 42), ('S-43', 1, 43), ('S-44', 1, 44),
+('S-45', 1, 45), ('S-46', 1, 46), ('S-47', 1, 47), ('S-48', 1, 48),
+('S-49', 1, 49), ('S-50', 1, 50), ('S-51', 1, 51), ('S-52', 1, 52),
+('S-53', 1, 53), ('S-54', 1, 54), ('S-55', 1, 55), ('S-56', 1, 56),
+('S-57', 1, 57), ('S-58', 1, 58), ('S-59', 1, 59), ('S-60', 1, 60),
+('S-61', 1, 61), ('S-62', 1, 62), ('S-63', 1, 63), ('S-64', 1, 64);
 
-INSERT INTO Leitura (frequenciaLuminosidade, dtCaptacaoDados, fkSensor) VALUES
-(110.5, '2026-04-01 09:00:00', 1),
-(120.0, '2026-04-01 10:00:00', 1),
-(130.2, '2026-04-01 11:00:00', 1),
-(150.0, '2026-04-01 09:00:00', 2),
-(160.4, '2026-04-01 10:00:00', 2),
-(180.3, '2026-04-01 09:00:00', 3),
-(175.0, '2026-04-01 10:00:00', 3),
-(400.0, '2026-04-01 09:00:00', 4),
-(420.8, '2026-04-01 10:00:00', 4);
+INSERT INTO Leitura (frequenciaLuminosidade, fkSensor) VALUES
+-- ESTUFA 1 (USP A) - Sensores 1 a 16
+(110.5, 1),  (112.0, 2),  (115.2, 3),  (120.0, 4),
+(121.5, 5),  (119.8, 6),  (130.2, 7),  (128.5, 8),
+(131.0, 9),  (140.0, 10), (142.1, 11), (139.5, 12),
+(150.0, 13), (155.0, 14), (160.4, 15), (158.9, 16),
 
+-- ESTUFA 2 (USP B) - Sensores 17 a 32
+(145.3, 17), (146.0, 18), (148.5, 19), (142.1, 20),
+(150.2, 21), (155.6, 22), (153.4, 23), (160.0, 24),
+(162.5, 25), (165.0, 26), (158.2, 27), (159.9, 28),
+(170.1, 29), (172.4, 30), (168.5, 31), (175.0, 32),
+
+-- ESTUFA 3 (UNICAMP A) - Sensores 33 a 48
+(110.0, 33), (108.5, 34), (115.0, 35), (112.3, 36),
+(118.4, 37), (120.1, 38), (125.0, 39), (122.8, 40),
+(130.5, 41), (132.0, 42), (135.5, 43), (134.1, 44),
+(140.2, 45), (142.8, 46), (145.0, 47), (148.5, 48),
+
+-- ESTUFA 4 (UNICAMP B) - Sensores 49 a 64
+(150.0, 49), (152.5, 50), (155.0, 51), (158.2, 52),
+(160.4, 53), (162.1, 54), (165.5, 55), (168.0, 56),
+(170.2, 57), (175.0, 58), (178.5, 59), (180.0, 60),
+(185.2, 61), (188.4, 62), (190.0, 63), (195.5, 64);
+
+
+CREATE VIEW vw_obter_dados_dash_principal AS
 SELECT 
+    u.idUsuario,
+	es.idEstufa,
+    u.nome AS NomeUsuario,
     es.nome AS Estufa,
     s.nome AS Setor,
     est.numeroIdentificador AS Estante,
@@ -147,7 +197,30 @@ JOIN Prateleira p
 JOIN Sensor sen 
     ON p.idPrateleira = sen.fkPrateleira
 JOIN Leitura l 
-    ON sen.idSensor = l.fkSensor
-WHERE 
-    u.idUsuario = 2;
-    
+    ON sen.idSensor = l.fkSensor;
+
+CREATE VIEW vw_leituras_por_estufa AS
+SELECT 
+    u.idUsuario,
+    es.idEstufa,
+    es.nome AS Estufa,
+    s.nome AS Setor,
+    est.numeroIdentificador AS Estante,
+    p.numeroIdentificador AS Prateleira,
+    sen.nome AS Sensor,
+    l.frequenciaLuminosidade AS FrequenciaLuminosa,
+    l.dtCaptacaoDados AS DataLeitura
+FROM Usuario u
+JOIN Usuario_Estufa ue ON u.idUsuario = ue.fkUsuario
+JOIN Estufa es ON ue.fkEstufa = es.idEstufa
+JOIN Setor s ON es.idEstufa = s.fkEstufa
+JOIN Estante est ON s.idSetor = est.fkSetor
+JOIN Prateleira p ON est.idEstante = p.fkEstante
+JOIN Sensor sen ON p.idPrateleira = sen.fkPrateleira
+JOIN Leitura l ON sen.idSensor = l.fkSensor;
+
+SELECT * FROM vw_obter_dados_dash_principal 
+WHERE idUsuario = 2;
+
+SELECT * FROM vw_leituras_por_estufa 
+WHERE idUsuario = 2 AND idEstufa = 1;
