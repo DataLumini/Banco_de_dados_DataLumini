@@ -5,7 +5,7 @@ CREATE TABLE Empresa (
     idEmpresa INT PRIMARY KEY AUTO_INCREMENT,
     razaoSocial VARCHAR(255),
     cnpj CHAR(18),
-    status TINYINT
+    codigo VARCHAR(45)
 );
 
 CREATE TABLE Usuario (
@@ -14,7 +14,6 @@ CREATE TABLE Usuario (
     senha VARCHAR(255),
     email VARCHAR(255),
     cpf CHAR(11),
-    status TINYINT,
     fkEmpresa INT, 
     CONSTRAINT chfk_empresa_usuario FOREIGN KEY (fkEmpresa) REFERENCES Empresa(idEmpresa)
 );
@@ -64,7 +63,6 @@ CREATE TABLE Sensor (
     nome VARCHAR(255),
     dt_instalacao DATETIME,
     dt_atualizacao DATETIME,
-    status TINYINT,
     fkPrateleira INT,
     CONSTRAINT chfk_prateleira_sensor FOREIGN KEY (fkPrateleira) REFERENCES Prateleira(idPrateleira)
 );
@@ -78,15 +76,15 @@ CREATE TABLE Leitura (
 );
 
 -- 1. Empresas (2 Empresas)
-INSERT INTO Empresa (razaoSocial, cnpj, status) VALUES
-('Laboratório de Biologia Vegetal USP', '11.111.111/0001-00', 1),
-('Centro de Pesquisa Genética Unicamp', '22.222.222/0001-00', 1);
+INSERT INTO Empresa (razaoSocial, cnpj, codigo) VALUES
+('Laboratório de Biologia Vegetal USP', '11.111.111/0001-00', 'Ab12s'),
+('Centro de Pesquisa Genética Unicamp', '22.222.222/0001-00', 'Ldh2a');
 
 -- 2. Usuários (3 Usuários: 2 na USP, 1 na Unicamp)
-INSERT INTO Usuario (nome, email, senha, cpf, status, fkEmpresa) VALUES
-('Ana Ribeiro', 'ana.ribeiro@usp.br', 'usp123', '34567890123', 1, 1),
-('Carlos Lima', 'carlos.lima@usp.br', 'usp456', '45678901234', 1, 1),
-('Lucas Martins', 'lucas.martins@unicamp.br', 'unicamp123', '56789012345', 1, 2);
+INSERT INTO Usuario (nome, email, senha, cpf, fkEmpresa) VALUES
+('Ana Ribeiro', 'ana.ribeiro@usp.br', 'usp123', '34567890123', 1),
+('Carlos Lima', 'carlos.lima@usp.br', 'usp456', '45678901234', 1),
+('Lucas Martins', 'lucas.martins@unicamp.br', 'unicamp123', '56789012345', 2);
 
 -- 3. Estufas (2 por empresa = 4 Estufas)
 INSERT INTO Estufa (nome, limiteMinimo, limiteMaximo, status, fkEmpresa) VALUES
@@ -126,49 +124,50 @@ INSERT INTO Prateleira (numeroIdentificador, fkEstante) VALUES
 (1,13), (2,13), (3,13), (4,13), (1,14), (2,14), (3,14), (4,14),
 (1,15), (2,15), (3,15), (4,15), (1,16), (2,16), (3,16), (4,16);
 
--- 8. Sensores (1 por Prateleira = 64 Sensores)
-INSERT INTO Sensor (nome, status, fkPrateleira) VALUES
-('S-01', 1, 1), ('S-02', 1, 2), ('S-03', 1, 3), ('S-04', 1, 4),
-('S-05', 1, 5), ('S-06', 1, 6), ('S-07', 1, 7), ('S-08', 1, 8),
-('S-09', 1, 9), ('S-10', 1, 10), ('S-11', 1, 11), ('S-12', 1, 12),
-('S-13', 1, 13), ('S-14', 1, 14), ('S-15', 1, 15), ('S-16', 1, 16),
-('S-17', 1, 17), ('S-18', 1, 18), ('S-19', 1, 19), ('S-20', 1, 20),
-('S-21', 1, 21), ('S-22', 1, 22), ('S-23', 1, 23), ('S-24', 1, 24),
-('S-25', 1, 25), ('S-26', 1, 26), ('S-27', 1, 27), ('S-28', 1, 28),
-('S-29', 1, 29), ('S-30', 1, 30), ('S-31', 1, 31), ('S-32', 1, 32),
-('S-33', 1, 33), ('S-34', 1, 34), ('S-35', 1, 35), ('S-36', 1, 36),
-('S-37', 1, 37), ('S-38', 1, 38), ('S-39', 1, 39), ('S-40', 1, 40),
-('S-41', 1, 41), ('S-42', 1, 42), ('S-43', 1, 43), ('S-44', 1, 44),
-('S-45', 1, 45), ('S-46', 1, 46), ('S-47', 1, 47), ('S-48', 1, 48),
-('S-49', 1, 49), ('S-50', 1, 50), ('S-51', 1, 51), ('S-52', 1, 52),
-('S-53', 1, 53), ('S-54', 1, 54), ('S-55', 1, 55), ('S-56', 1, 56),
-('S-57', 1, 57), ('S-58', 1, 58), ('S-59', 1, 59), ('S-60', 1, 60),
-('S-61', 1, 61), ('S-62', 1, 62), ('S-63', 1, 63), ('S-64', 1, 64);
+-- 8. Sensores (1 por Prateleira = 64 Sensores) 
+INSERT INTO Sensor (nome, fkPrateleira) VALUES 
+('S-01', 1), ('S-02', 2), ('S-03', 3), ('S-04', 4), 
+('S-05', 5), ('S-06', 6), ('S-07', 7), ('S-08', 8), 
+('S-09', 9), ('S-10', 10), ('S-11', 11), ('S-12', 12), 
+('S-13', 13), ('S-14', 14), ('S-15', 15), ('S-16', 16), 
+('S-17', 17), ('S-18', 18), ('S-19', 19), ('S-20', 20), 
+('S-21', 21), ('S-22', 22), ('S-23', 23), ('S-24', 24), 
+('S-25', 25), ('S-26', 26), ('S-27', 27), ('S-28', 28), 
+('S-29', 29), ('S-30', 30), ('S-31', 31), ('S-32', 32), 
+('S-33', 33), ('S-34', 34), ('S-35', 35), ('S-36', 36), 
+('S-37', 37), ('S-38', 38), ('S-39', 39), ('S-40', 40), 
+('S-41', 41), ('S-42', 42), ('S-43', 43), ('S-44', 44), 
+('S-45', 45), ('S-46', 46), ('S-47', 47), ('S-48', 48), 
+('S-49', 49), ('S-50', 50), ('S-51', 51), ('S-52', 52), 
+('S-53', 53), ('S-54', 54), ('S-55', 55), ('S-56', 56), 
+('S-57', 57), ('S-58', 58), ('S-59', 59), ('S-60', 60), 
+('S-61', 61), ('S-62', 62), ('S-63', 63), ('S-64', 64);
 
-INSERT INTO Leitura (frequenciaLuminosidade, fkSensor) VALUES
+INSERT INTO Leitura (frequenciaLuminosidade, fkSensor) VALUES 
 -- ESTUFA 1 (USP A) - Sensores 1 a 16
-(110.5, 1),  (112.0, 2),  (115.2, 3),  (120.0, 4),
-(121.5, 5),  (119.8, 6),  (130.2, 7),  (128.5, 8),
-(131.0, 9),  (140.0, 10), (142.1, 11), (139.5, 12),
-(150.0, 13), (155.0, 14), (160.4, 15), (158.9, 16),
+(110.5, 1), (112.0, 2), (115.2, 3), (120.0, 4), 
+(121.5, 5), (119.8, 6), (130.2, 7), (128.5, 8), 
+(131.0, 9), (140.0, 10), (142.1, 11), (139.5, 12), 
+(150.0, 13), (155.0, 14), (160.4, 15), (158.9, 16), 
 
 -- ESTUFA 2 (USP B) - Sensores 17 a 32
-(145.3, 17), (146.0, 18), (148.5, 19), (142.1, 20),
-(150.2, 21), (155.6, 22), (153.4, 23), (160.0, 24),
-(162.5, 25), (165.0, 26), (158.2, 27), (159.9, 28),
-(170.1, 29), (172.4, 30), (168.5, 31), (175.0, 32),
+(145.3, 17), (146.0, 18), (148.5, 19), (142.1, 20), 
+(150.2, 21), (155.6, 22), (153.4, 23), (160.0, 24), 
+(162.5, 25), (165.0, 26), (158.2, 27), (159.9, 28), 
+(170.1, 29), (172.4, 30), (168.5, 31), (175.0, 32), 
 
 -- ESTUFA 3 (UNICAMP A) - Sensores 33 a 48
-(110.0, 33), (108.5, 34), (115.0, 35), (112.3, 36),
-(118.4, 37), (120.1, 38), (125.0, 39), (122.8, 40),
-(130.5, 41), (132.0, 42), (135.5, 43), (134.1, 44),
-(140.2, 45), (142.8, 46), (145.0, 47), (148.5, 48),
+(110.0, 33), (108.5, 34), (115.0, 35), (112.3, 36), 
+(118.4, 37), (120.1, 38), (125.0, 39), (122.8, 40), 
+(130.5, 41), (132.0, 42), (135.5, 43), (134.1, 44), 
+(140.2, 45), (142.8, 46), (145.0, 47), (148.5, 48), 
 
 -- ESTUFA 4 (UNICAMP B) - Sensores 49 a 64
-(150.0, 49), (152.5, 50), (155.0, 51), (158.2, 52),
-(160.4, 53), (162.1, 54), (165.5, 55), (168.0, 56),
-(170.2, 57), (175.0, 58), (178.5, 59), (180.0, 60),
+(150.0, 49), (152.5, 50), (155.0, 51), (158.2, 52), 
+(160.4, 53), (162.1, 54), (165.5, 55), (168.0, 56), 
+(170.2, 57), (175.0, 58), (178.5, 59), (180.0, 60), 
 (185.2, 61), (188.4, 62), (190.0, 63), (195.5, 64);
+
 
 
 CREATE VIEW vw_obter_dados_dash_principal AS
