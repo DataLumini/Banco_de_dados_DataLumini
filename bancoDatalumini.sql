@@ -14,7 +14,8 @@ CREATE TABLE Usuario (
     senha VARCHAR(255),
     email VARCHAR(255),
     cpf CHAR(11),
-    fkEmpresa INT, 
+    regra tinyint default 0,
+    fkEmpresa INT,
     CONSTRAINT chfk_empresa_usuario FOREIGN KEY (fkEmpresa) REFERENCES Empresa(idEmpresa)
 );
 
@@ -81,10 +82,10 @@ INSERT INTO Empresa (razaoSocial, cnpj, codigo) VALUES
 ('Centro de Pesquisa Genética Unicamp', '22.222.222/0001-00', 'Ldh2a');
 
 -- 2. Usuários (3 Usuários: 2 na USP, 1 na Unicamp)
-INSERT INTO Usuario (nome, email, senha, cpf, fkEmpresa) VALUES
-('Ana Ribeiro', 'ana.ribeiro@usp.br', 'usp123', '34567890123', 1),
-('Carlos Lima', 'carlos.lima@usp.br', 'usp456', '45678901234', 1),
-('Lucas Martins', 'lucas.martins@unicamp.br', 'unicamp123', '56789012345', 2);
+INSERT INTO Usuario (nome, email, senha, cpf, fkEmpresa, regra) VALUES
+('Bia', 'bia@gmail.com', 'usp123', '123123', 1, 0),
+('Guilherme', 'guilherme@gmail.com', '123123', '45678901234', 1, 1),
+('Gabriel', 'gabriel@gmail.com', '123123', '56789012345', 2, 2);
 
 -- 3. Estufas (2 por empresa = 4 Estufas)
 INSERT INTO Estufa (nome, limiteMinimo, limiteMaximo, status, fkEmpresa) VALUES
