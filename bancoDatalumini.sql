@@ -223,4 +223,46 @@ SELECT * FROM vw_obter_dados_dash_principal
 WHERE idUsuario = 2;
 
 SELECT * FROM vw_leituras_por_estufa 
-WHERE idUsuario = 2 AND idEstufa = 1;
+WHERE idUsuario = 2 AND idEstufa = 1;  
+
+CREATE VIEW vw_alertas_leituras_24h AS
+SELECT 
+    u.idUsuario,
+    es.idEstufa,
+    es.nome AS Estufa,
+    s.nome AS Setor,
+    est.numeroIdentificador AS Estante,
+    p.numeroIdentificador AS Prateleira,
+    sen.idSensor,
+    sen.nome AS Sensor,
+    l.frequenciaLuminosidade AS FrequenciaLuminosa,
+    l.dtCaptacaoDados AS DataLeitura,
+    CASE
+        WHEN l.frequenciaLuminosidade < 100 
+          OR l.frequenciaLuminosidade > 200 
+            THEN 'Crítico'
+
+        WHEN l.frequenciaLuminosidade <= 110 
+          OR l.frequenciaLuminosidade >= 190 
+            THEN 'Atenção'
+    END AS Estado
+FROM Usuario u
+JOIN Usuario_Estufa ue 
+    ON u.idUsuario = ue.fkUsuario
+JOIN Estufa es 
+    ON ue.fkEstufa = es.idEstufa
+JOIN Setor s 
+    ON es.idEstufa = s.fkEstufa
+JOIN Estante est 
+    ON s.idSetor = est.fkSetor
+JOIN Prateleira p 
+    ON est.idEstante = p.fkEstante
+JOIN Sensor sen 
+    ON p.idPrateleira = sen.fkPrateleira
+JOIN Leitura l 
+    ON sen.idSensor = l.fkSensor
+WHERE l.dtCaptacaoDados >= NOW() - INTERVAL 24 HOUR
+AND (
+    l.frequenciaLuminosidade <= 110
+    OR l.frequenciaLuminosidade >= 190
+);
