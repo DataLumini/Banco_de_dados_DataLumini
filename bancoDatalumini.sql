@@ -315,7 +315,11 @@ SELECT * FROM vw_obter_dados_dash_principal
 WHERE idUsuario = 2;
 
 SELECT * FROM vw_leituras_por_estufa 
+<<<<<<< HEAD
 WHERE idUsuario = 2 AND idEstufa = 1;
+=======
+WHERE idUsuario = 2 AND idEstufa = 1;  
+>>>>>>> cfec7ad3f6977bb9cc4c61b1cb667aed01ffc38c
 
 CREATE VIEW vw_alertas_leituras_24h AS
 SELECT 
@@ -358,6 +362,7 @@ AND (
     l.frequenciaLuminosidade <= 110
     OR l.frequenciaLuminosidade >= 190
 );
+<<<<<<< HEAD
 
 select * from usuario;
 SELECT *
@@ -420,3 +425,5 @@ JOIN Estufa es
 FROM Setor s
 JOIN Estante est ON est.fkSetor = s.idSetor
 GROUP BY s.idSetor, s.nome;
+=======
+>>>>>>> cfec7ad3f6977bb9cc4c61b1cb667aed01ffc38c
