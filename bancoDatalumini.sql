@@ -1,8 +1,6 @@
 CREATE DATABASE datalumini;
 USE datalumini;
 
-
-
 CREATE TABLE Empresa (
     idEmpresa INT PRIMARY KEY AUTO_INCREMENT,
     razaoSocial VARCHAR(255),
@@ -74,6 +72,7 @@ CREATE TABLE Leitura (
     idLeitura INT PRIMARY KEY AUTO_INCREMENT,
     frequenciaLuminosidade FLOAT,
     dtCaptacaoDados DATETIME DEFAULT NOW(),
+    status tinyint default 0,
     fkSensor INT,
     CONSTRAINT chfk_sensor_leitura FOREIGN KEY (fkSensor) REFERENCES Sensor(idSensor)
 );
@@ -193,7 +192,7 @@ INSERT INTO Leitura (frequenciaLuminosidade, fkSensor) VALUES
 
 (150, 13),  -- Normal
 (155, 14),  -- Normal
-(160.4, 15),-- Normal
+(160.4, 15),-- Normal	
 (158.9, 16),-- Normal
 
 
@@ -297,6 +296,7 @@ SELECT
     es.idEstufa,
     es.nome AS Estufa,
     s.nome AS Setor,
+    s.idSetor,
     est.numeroIdentificador AS Estante,
     p.numeroIdentificador AS Prateleira,
     sen.nome AS Sensor,
@@ -315,11 +315,7 @@ SELECT * FROM vw_obter_dados_dash_principal
 WHERE idUsuario = 2;
 
 SELECT * FROM vw_leituras_por_estufa 
-<<<<<<< HEAD
 WHERE idUsuario = 2 AND idEstufa = 1;
-=======
-WHERE idUsuario = 2 AND idEstufa = 1;  
->>>>>>> cfec7ad3f6977bb9cc4c61b1cb667aed01ffc38c
 
 CREATE VIEW vw_alertas_leituras_24h AS
 SELECT 
@@ -331,6 +327,8 @@ SELECT
     p.numeroIdentificador AS Prateleira,
     sen.idSensor,
     sen.nome AS Sensor,
+    l.idLeitura,
+    l.status as Status,
     l.frequenciaLuminosidade AS FrequenciaLuminosa,
     l.dtCaptacaoDados AS DataLeitura,
     CASE
@@ -362,9 +360,7 @@ AND (
     l.frequenciaLuminosidade <= 110
     OR l.frequenciaLuminosidade >= 190
 );
-<<<<<<< HEAD
-
-select * from usuario;
+select * from Usuario;
 SELECT *
         FROM vw_alertas_leituras_24h
         WHERE idUsuario = 2
@@ -425,5 +421,30 @@ JOIN Estufa es
 FROM Setor s
 JOIN Estante est ON est.fkSetor = s.idSetor
 GROUP BY s.idSetor, s.nome;
-=======
->>>>>>> cfec7ad3f6977bb9cc4c61b1cb667aed01ffc38c
+
+ SELECT
+            es.idEstufa as IdEstufa,
+            es.nome AS Estufa,
+            s.nome AS Setor,
+            est.numeroIdentificador AS Estante,
+            p.numeroIdentificador AS Prateleira,
+            l.frequenciaLuminosidade AS FrequenciaLuminosa
+        FROM Usuario_Estufa ue
+        JOIN Estufa es 
+            ON ue.fkEstufa = es.idEstufa
+        JOIN Setor s 
+            ON es.idEstufa = s.fkEstufa
+        JOIN Estante est 
+            ON s.idSetor = est.fkSetor
+        JOIN Prateleira p
+            ON est.idEstante = p.fkEstante
+        JOIN Sensor sen 
+            ON p.idPrateleira = sen.fkPrateleira
+        JOIN Leitura l
+            ON sen.idSensor = l.fkSensor
+        WHERE ue.fkUsuario = 1
+            AND l.dtCaptacaoDados >= NOW() - INTERVAL 24 HOUR
+            AND (l.frequenciaLuminosidade BETWEEN es.limiteMinimo AND (es.limiteMinimo + (es.limiteMaximo - es.limiteMinimo) * 0.10)
+            OR l.frequenciaLuminosidade BETWEEN (es.limiteMaximo - (es.limiteMaximo - es.limiteMinimo) * 0.10) AND es.limiteMaximo)
+        ORDER BY l.dtCaptacaoDados DESC;
+
