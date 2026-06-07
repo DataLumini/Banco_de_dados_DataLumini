@@ -268,6 +268,7 @@ SELECT
     sen.nome AS Sensor,
     l.idLeitura,
     l.frequenciaLuminosidade AS FrequenciaLuminosa,
+    l.status,
     l.dtCaptacaoDados AS DataLeitura,
     CASE
         WHEN l.frequenciaLuminosidade < es.limiteMinimo OR l.frequenciaLuminosidade > es.limiteMaximo 
@@ -327,6 +328,7 @@ JOIN Setor s ON es.idEstufa = s.fkEstufa
 JOIN Estante est ON s.idSetor = est.fkSetor
 JOIN Prateleira p ON est.idEstante = p.fkEstante
 JOIN Sensor sen ON p.idPrateleira = sen.fkPrateleira
+JOIN Sensor sen ON p.idPrateleira = sen.fkPrateleira
 JOIN Leitura l ON sen.idSensor = l.fkSensor
 WHERE ue.fkUsuario = 1
   AND l.dtCaptacaoDados >= NOW() - INTERVAL 24 HOUR
@@ -336,6 +338,23 @@ WHERE ue.fkUsuario = 1
   )
 ORDER BY l.dtCaptacaoDados DESC;
 
-SELECT * FROM vw_prateleiras_por_setor
-WHERE idSetor = 1
-ORDER BY Estante ASC, Prioridade ASC, Prateleira ASC;
+SELECT 
+    v.*,
+    (
+        SELECT COUNT(l.idLeitura) 
+        FROM Leitura l
+        JOIN Estufa es ON es.idEstufa = v.idEstufa
+        WHERE l.fkSensor = v.idSensor
+          AND l.status = 0
+          AND (
+              l.frequenciaLuminosidade <= (es.limiteMinimo + (es.limiteMaximo - es.limiteMinimo) * 0.10)
+              OR 
+              l.frequenciaLuminosidade >= (es.limiteMaximo - (es.limiteMaximo - es.limiteMinimo) * 0.10)
+          )
+    ) AS qtd_alertas
+FROM vw_prateleiras_por_setor v
+WHERE v.idSetor = 6
+ORDER BY 
+    v.Estante ASC, 
+    v.Prioridade ASC, 
+    v.Prateleira ASC;
